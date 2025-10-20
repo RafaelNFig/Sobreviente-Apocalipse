@@ -45,8 +45,8 @@ export interface ConfiguracaoJogo {
 // Configurações padrão
 export const CONFIG_PADRAO: ConfiguracaoJogo = {
   tamanhoMapa: 25,
-  numZumbis: 15,
-  numCaixas: 8,
+  numZumbis: 20,
+  numCaixas: 15,
   raioVisao: 1, // O Sobrevivente pode ver até 2 células de distância
 };
 

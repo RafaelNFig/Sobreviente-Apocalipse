@@ -1,16 +1,11 @@
 // src/app.ts
 import { JogoMapa } from './core/JogoMapa.js';
-import { JogoEstatisticas } from './core/JogoEstatisticas.js';
 import { Visibilidade, CONFIG_PADRAO } from './tipos.js';
 
 // ---------------------------
 // Inicialização do Jogo
 // ---------------------------
-const estatisticas = new JogoEstatisticas();
-estatisticas.iniciarContagemTempo();
-
-// Cria o mapa do jogo (gera sobrevivente internamente)
-const jogoMapa = new JogoMapa(CONFIG_PADRAO);
+let jogoMapa = new JogoMapa(CONFIG_PADRAO); // Mudei para let para poder reatribuir
 
 // Elementos HTML
 const mapaDiv = document.getElementById('mapa') as HTMLDivElement | null;
@@ -20,6 +15,79 @@ const logDiv = document.getElementById('log') as HTMLDivElement | null;
 // Configurações da câmera
 const AREA_VISIVEL_TAMANHO = 5;
 const TAMANHO_CELULA = 60;
+
+// ---------------------------
+// Funções de Reinício
+// ---------------------------
+function mostrarTelaFimDeJogo(mensagem: string, vitoria: boolean): void {
+    const container = document.getElementById('game-over-container') as HTMLDivElement;
+    const title = document.getElementById('game-over-title') as HTMLHeadingElement;
+    const stats = document.getElementById('game-over-stats') as HTMLDivElement;
+    const restartBtn = document.getElementById('restart-button') as HTMLButtonElement;
+    
+    if (!container || !title || !stats || !restartBtn) return;
+
+    // Configura título e mensagem
+    title.textContent = vitoria ? '🎉 Você Venceu!' : '💀 Game Over!';
+    
+    const est = jogoMapa.sobrevivente.estatisticas.getEstatisticas();
+    stats.innerHTML = `
+        <p><strong>${mensagem}</strong></p>
+        <div class="final-stats">
+            <p>🧟 Zumbis eliminados: ${est.zumbisEliminados}</p>
+            <p>🎒 Recursos coletados: ${est.recursosColetados}</p>
+            <p>🟩 Tijolos percorridos: ${est.tijolosPercorridos}</p>
+            <p>⏱️ Tempo total: ${est.tempoTotalSegundos}s</p>
+        </div>
+    `;
+
+    // Configura botão de reinício
+    restartBtn.onclick = reiniciarJogo;
+    
+    // Mostra a tela
+    container.style.display = 'flex';
+}
+
+function reiniciarJogo(): void {
+    const container = document.getElementById('game-over-container') as HTMLDivElement;
+    if (container) {
+        container.style.display = 'none';
+    }
+
+    // Remove event listener antigo
+    document.removeEventListener('keydown', keyHandler);
+
+    // Recria o jogo completamente
+    jogoMapa = new JogoMapa(CONFIG_PADRAO);
+    
+    // Reconfigura eventos
+    document.addEventListener('keydown', keyHandler);
+    
+    // Atualiza a interface
+    renderizarHUD();
+    renderizarMapa();
+    
+    // Limpa o log
+    if (logDiv) {
+        logDiv.innerHTML = '';
+    }
+    
+    adicionarLog('🔄 Jogo reiniciado! Boa sorte, sobrevivente!');
+    adicionarLog('🎯 Encontre o carro 🚗 para escapar!');
+}
+
+function finalizarJogo(mensagem: string, vitoria: boolean = false): void {
+    // Para de escutar teclas
+    document.removeEventListener('keydown', keyHandler);
+    
+    // Finaliza estatísticas
+    jogoMapa.sobrevivente.estatisticas.finalizarJogo(vitoria);
+    
+    // Mostra tela de fim de jogo
+    setTimeout(() => {
+        mostrarTelaFimDeJogo(mensagem, vitoria);
+    }, 500);
+}
 
 // ---------------------------
 // Funções de Renderização
@@ -170,21 +238,11 @@ function mover(direcao: string): void {
 
     // Condição de fim de jogo
     if (!sobrevivente.estaVivo || sobrevivente.estatisticas.concluidoComSucesso) {
-        const est = sobrevivente.estatisticas.getEstatisticas();
-        let mensagemFim = sobrevivente.estatisticas.concluidoComSucesso
+        const mensagemFim = sobrevivente.estatisticas.concluidoComSucesso
             ? '🎉 VOCÊ VENCEU! Escapou com sucesso!'
             : '💀 GAME OVER! Você morreu.';
-
-        mensagemFim += `\n\nEstatísticas finais:\n` +
-                       `🧟 Zumbis eliminados: ${est.zumbisEliminados}\n` +
-                       `🎒 Recursos coletados: ${est.recursosColetados}\n` +
-                       `🟩 Tijolos percorridos: ${est.tijolosPercorridos}\n` +
-                       `⏱️ Tempo total: ${est.tempoTotalSegundos}s`;
-
-        setTimeout(() => {
-            alert(mensagemFim);
-            document.removeEventListener('keydown', keyHandler);
-        }, 100);
+        
+        finalizarJogo(mensagemFim, sobrevivente.estatisticas.concluidoComSucesso);
     }
 }
 
