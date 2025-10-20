@@ -1,5 +1,4 @@
 // src/core/JogoMapa.ts
-// Adicione .js em todos os imports
 import { CONFIG_PADRAO, Visibilidade } from '../tipos.js';
 import { Sobrevivente } from '../entidades/Sobrevivente.js';
 import { Zumbi } from '../entidades/Zumbi.js';
@@ -16,12 +15,11 @@ export class JogoMapa {
         this.inicializarMatriz();
         this.colocarEntidades();
     }
-    // Inicializa a matriz e visibilidade - VERSÃO MAIS SEGURA
+    // Inicializa a matriz e visibilidade
     inicializarMatriz() {
         this.matriz = [];
         this.visibilidade = [];
         for (let y = 0; y < this.config.tamanhoMapa; y++) {
-            // Cria novas linhas garantidas
             const novaLinhaMatriz = [];
             const novaLinhaVisibilidade = [];
             for (let x = 0; x < this.config.tamanhoMapa; x++) {
@@ -32,13 +30,12 @@ export class JogoMapa {
             this.visibilidade[y] = novaLinhaVisibilidade;
         }
     }
-    // Cria e posiciona entidades - VERSÃO MAIS SEGURA
+    // Cria e posiciona entidades
     colocarEntidades() {
         // 1. Sobrevivente
         const sx = Math.floor(this.config.tamanhoMapa / 2);
         const sy = Math.floor(this.config.tamanhoMapa / 2);
         this.sobrevivente = new Sobrevivente(sx, sy, this.estatisticas);
-        // VERIFICAÇÃO MAIS SEGURA
         const linhaSobrevivente = this.matriz[sy];
         if (linhaSobrevivente && linhaSobrevivente[sx] === null) {
             linhaSobrevivente[sx] = this.sobrevivente;
@@ -48,7 +45,6 @@ export class JogoMapa {
         while (zumbisColocados < this.config.numZumbis) {
             const x = Math.floor(Math.random() * this.config.tamanhoMapa);
             const y = Math.floor(Math.random() * this.config.tamanhoMapa);
-            // VERIFICAÇÃO MAIS SEGURA
             const linha = this.matriz[y];
             if (linha && linha[x] === null) {
                 linha[x] = new Zumbi(x, y);
@@ -60,7 +56,6 @@ export class JogoMapa {
         while (caixasColocadas < this.config.numCaixas) {
             const x = Math.floor(Math.random() * this.config.tamanhoMapa);
             const y = Math.floor(Math.random() * this.config.tamanhoMapa);
-            // VERIFICAÇÃO MAIS SEGURA
             const linha = this.matriz[y];
             if (linha && linha[x] === null) {
                 linha[x] = new CaixaDeSuprimentos(x, y);
@@ -72,7 +67,6 @@ export class JogoMapa {
         while (!colocado) {
             const x = Math.floor(Math.random() * this.config.tamanhoMapa);
             const y = Math.floor(Math.random() * this.config.tamanhoMapa);
-            // VERIFICAÇÃO MAIS SEGURA
             const linha = this.matriz[y];
             if (linha && linha[x] === null) {
                 linha[x] = new CarroDeSaida(x, y);
@@ -82,7 +76,7 @@ export class JogoMapa {
         // Atualiza a visibilidade inicial do sobrevivente
         this.atualizarVisibilidade();
     }
-    // Move o sobrevivente e dispara interação - VERSÃO MAIS SEGURA
+    // Move o sobrevivente e dispara interação
     moverSobrevivente(dx, dy) {
         if (!this.sobrevivente)
             return "Erro: sobrevivente não encontrado.";
@@ -95,7 +89,6 @@ export class JogoMapa {
             novaY < 0 || novaY >= this.config.tamanhoMapa) {
             return "Movimento inválido.";
         }
-        // VERIFICAÇÕES MAIS SEGURAS
         const linhaAtual = this.matriz[posAtual.y];
         const linhaNova = this.matriz[novaY];
         if (!linhaAtual || !linhaNova) {
@@ -109,7 +102,7 @@ export class JogoMapa {
                 linhaNova[novaX] = null;
             }
         }
-        // Atualiza posição - COM VERIFICAÇÕES MAIS SEGURAS
+        // Atualiza posição
         linhaAtual[posAtual.x] = null;
         this.sobrevivente.mover({ x: novaX, y: novaY });
         linhaNova[novaX] = this.sobrevivente;
@@ -117,7 +110,7 @@ export class JogoMapa {
         this.atualizarVisibilidade();
         return logInteracao || 'Movimento realizado.';
     }
-    // Atualiza a visibilidade ao redor do sobrevivente - VERSÃO MAIS SEGURA
+    // Atualiza a visibilidade ao redor do sobrevivente
     atualizarVisibilidade() {
         const raio = this.config.raioVisao;
         if (!this.sobrevivente)

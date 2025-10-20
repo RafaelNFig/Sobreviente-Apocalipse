@@ -1,11 +1,12 @@
 // src/app.ts
 import { JogoMapa } from './core/JogoMapa.js';
 import { Visibilidade, CONFIG_PADRAO } from './tipos.js';
+import { Zumbi } from './entidades/Zumbi.js';
 
 // ---------------------------
 // Inicialização do Jogo
 // ---------------------------
-let jogoMapa = new JogoMapa(CONFIG_PADRAO); // Mudei para let para poder reatribuir
+let jogoMapa = new JogoMapa(CONFIG_PADRAO);
 
 // Elementos HTML
 const mapaDiv = document.getElementById('mapa') as HTMLDivElement | null;
@@ -27,7 +28,6 @@ function mostrarTelaFimDeJogo(mensagem: string, vitoria: boolean): void {
     
     if (!container || !title || !stats || !restartBtn) return;
 
-    // Configura título e mensagem
     title.textContent = vitoria ? '🎉 Você Venceu!' : '💀 Game Over!';
     
     const est = jogoMapa.sobrevivente.estatisticas.getEstatisticas();
@@ -41,10 +41,7 @@ function mostrarTelaFimDeJogo(mensagem: string, vitoria: boolean): void {
         </div>
     `;
 
-    // Configura botão de reinício
     restartBtn.onclick = reiniciarJogo;
-    
-    // Mostra a tela
     container.style.display = 'flex';
 }
 
@@ -54,36 +51,25 @@ function reiniciarJogo(): void {
         container.style.display = 'none';
     }
 
-    // Remove event listener antigo
     document.removeEventListener('keydown', keyHandler);
-
-    // Recria o jogo completamente
     jogoMapa = new JogoMapa(CONFIG_PADRAO);
-    
-    // Reconfigura eventos
     document.addEventListener('keydown', keyHandler);
-    
-    // Atualiza a interface
     renderizarHUD();
     renderizarMapa();
     
-    // Limpa o log
     if (logDiv) {
         logDiv.innerHTML = '';
     }
     
     adicionarLog('🔄 Jogo reiniciado! Boa sorte, sobrevivente!');
     adicionarLog('🎯 Encontre o carro 🚗 para escapar!');
+    adicionarLog('👻 Cuidado com zumbis INVISÍVEIS!');
 }
 
 function finalizarJogo(mensagem: string, vitoria: boolean = false): void {
-    // Para de escutar teclas
     document.removeEventListener('keydown', keyHandler);
-    
-    // Finaliza estatísticas
     jogoMapa.sobrevivente.estatisticas.finalizarJogo(vitoria);
     
-    // Mostra tela de fim de jogo
     setTimeout(() => {
         mostrarTelaFimDeJogo(mensagem, vitoria);
     }, 500);
@@ -125,15 +111,12 @@ function renderizarMapa(): void {
     let inicioX = pos.x - Math.floor(AREA_VISIVEL_TAMANHO / 2);
     let inicioY = pos.y - Math.floor(AREA_VISIVEL_TAMANHO / 2);
 
-    // Ajusta para não ultrapassar as bordas esquerdas/superiores
     if (inicioX < 0) inicioX = 0;
     if (inicioY < 0) inicioY = 0;
 
-    // Garante que sempre mostra 5 células
     let fimX = inicioX + AREA_VISIVEL_TAMANHO;
     let fimY = inicioY + AREA_VISIVEL_TAMANHO;
 
-    // Ajusta se ultrapassar o tamanho do mapa (bordas direitas/inferiores)
     if (fimX > jogoMapa.config.tamanhoMapa) {
         inicioX = jogoMapa.config.tamanhoMapa - AREA_VISIVEL_TAMANHO;
         fimX = jogoMapa.config.tamanhoMapa;
@@ -143,7 +126,6 @@ function renderizarMapa(): void {
         fimY = jogoMapa.config.tamanhoMapa;
     }
 
-    // Garante valores válidos (double check)
     inicioX = Math.max(0, inicioX);
     inicioY = Math.max(0, inicioY);
     fimX = Math.min(jogoMapa.config.tamanhoMapa, fimX);
@@ -169,16 +151,19 @@ function renderizarMapa(): void {
 
             // LÓGICA: SÓ MOSTRA ÍCONES EM ÁREAS VISÍVEIS
             if (vis === Visibilidade.VISIVEL && entidade) {
-                // ÁREA VISÍVEL COM ENTIDADE: mostra ícone
-                celula.textContent = entidade.icone ?? '';
-                celula.style.fontSize = '32px';
-                
-                if (entidade === sobrevivente) {
-                    celula.classList.add('sobrevivente');
-                    celula.classList.add('centro-camera');
-                    celula.style.fontSize = '36px';
-                    celula.style.fontWeight = 'bold';
+                // Zumbis são sempre invisíveis - não mostramos ícone
+                if (!(entidade instanceof Zumbi)) {
+                    celula.textContent = entidade.icone ?? '';
+                    celula.style.fontSize = '32px';
+                    
+                    if (entidade === sobrevivente) {
+                        celula.classList.add('sobrevivente');
+                        celula.classList.add('centro-camera');
+                        celula.style.fontSize = '36px';
+                        celula.style.fontWeight = 'bold';
+                    }
                 }
+                // Zumbis: não mostra nada (sempre invisíveis)
             }
             // ÁREAS OCULTAS E ÁREAS VISTAS SEM ENTIDADE: célula vazia normal
             // ÁREAS VISÍVEIS SEM ENTIDADE: célula vazia normal
@@ -240,7 +225,7 @@ function mover(direcao: string): void {
     if (!sobrevivente.estaVivo || sobrevivente.estatisticas.concluidoComSucesso) {
         const mensagemFim = sobrevivente.estatisticas.concluidoComSucesso
             ? '🎉 VOCÊ VENCEU! Escapou com sucesso!'
-            : '💀 GAME OVER! Você morreu.';
+            : '🧟 GAME OVER! Você morreu.';
         
         finalizarJogo(mensagemFim, sobrevivente.estatisticas.concluidoComSucesso);
     }
@@ -270,11 +255,12 @@ function inicializarJogo(): void {
     renderizarHUD();
     renderizarMapa();
 
-    adicionarLog('🎮 Jogo iniciado! Encontre o carro 🚗 para escapar.');
+    adicionarLog('🎮 Jogo iniciado! Cuidado com zumbis INVISÍVEIS!');
+    adicionarLog('👻 Zumbis são SEMPRE invisíveis - surpresa total!');
     adicionarLog('⚔️ Zumbis atacam primeiro! Use munição para eliminá-los');
     adicionarLog('🏃 Sem munição? 50% de chance de fugir ou morrer!');
     adicionarLog('📦 Caixas podem estar vazias (20% chance)');
-    adicionarLog('⬛ Células ocultas são misteriosas - explore com cuidado!');
+    adicionarLog('🎯 Objetivo: Encontre o carro 🚗 para escapar!');
 }
 
 if (document.readyState === 'loading') {

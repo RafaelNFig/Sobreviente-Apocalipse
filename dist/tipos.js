@@ -12,8 +12,8 @@ export var RecursoTipo;
 // Configurações padrão
 export const CONFIG_PADRAO = {
     tamanhoMapa: 25,
-    numZumbis: 20,
-    numCaixas: 15,
+    numZumbis: 25,
+    numCaixas: 20,
     raioVisao: 1, // O Sobrevivente pode ver até 2 células de distância
 };
 // ===============================

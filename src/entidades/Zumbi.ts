@@ -4,73 +4,54 @@ import { EntidadeDoMapa } from './EntidadeDoMapa.js';
 import { Sobrevivente } from './Sobrevivente.js';
 import { DANO_ZUMBI, CUSTO_MUNICAO } from '../tipos.js';
 
-/**
- * Entidade que representa o inimigo no mapa. 
- * Interage atacando o Sobrevivente ou sendo eliminado por munição.
- */
 export class Zumbi extends EntidadeDoMapa {
     constructor(x: number, y: number) {
         super(x, y);
-        this.icone = '🧟'; // Ícone padrão para Zumbi
+        this.icone = ' '; // ← SEMPRE invisível
     }
 
-    /**
-     * Implementação Polimórfica do método interagir.
-     * Nova lógica: Zumbi SEMPRE ataca primeiro, depois jogador pode usar munição
-     */
     public interagir(jogador: Sobrevivente): string {
         if (this.foiColetado) return "Zumbi já foi eliminado.";
 
         let mensagem = "";
 
-        // FASE 1: ZUMBI SEMPRE ATACA PRIMEIRO
+        // Zumbi ataca primeiro
         const resultadoAtaque = this.atacarSobrevivente(jogador);
         mensagem += resultadoAtaque;
 
-        // Se o sobrevivente morreu no primeiro ataque, fim da interação
         if (!jogador.estaVivo) {
-            this.foiColetado = false; // Zumbi continua no mapa
+            this.foiColetado = false;
             return mensagem;
         }
 
-        // FASE 2: SOBREVIVENTE TENTA REAGIR
+        // Jogador reage
         mensagem += this.reagirAoAtaque(jogador);
 
         return mensagem;
     }
 
-    /**
-     * Zumbi sempre ataca o sobrevivente (remove escudo primeiro, depois vida)
-     */
     private atacarSobrevivente(jogador: Sobrevivente): string {
         if (jogador.escudo > 0) {
-            // Remove escudo primeiro
             const escudoRemovido = Math.min(DANO_ZUMBI, jogador.escudo);
             jogador.escudo -= escudoRemovido;
-            return `🧟 Zumbi atacou! 🛡️ -${escudoRemovido} escudo. Restante: ${jogador.escudo}\n`;
+            return `🧟⚡ Zumbi atacou! 🛡️ -${escudoRemovido} escudo. Restante: ${jogador.escudo}\n`;
         } else {
-            // Remove vida se não tem escudo
             jogador.vida = Math.max(0, jogador.vida - DANO_ZUMBI);
             
             if (jogador.vida <= 0) {
                 jogador.estaVivo = false;
-                return `🧟 Zumbi atacou! ❤️ -${DANO_ZUMBI} vida. 💀 VOCÊ MORREU!\n`;
+                return `🧟⚡ Zumbi atacou! ❤️ -${DANO_ZUMBI} vida. 💀 VOCÊ MORREU!\n`;
             } else {
-                return `🧟 Zumbi atacou! ❤️ -${DANO_ZUMBI} vida. Restante: ${jogador.vida}\n`;
+                return `🧟⚡ Zumbi atacou! ❤️ -${DANO_ZUMBI} vida. Restante: ${jogador.vida}\n`;
             }
         }
     }
 
-    /**
-     * Sobrevivente tenta reagir ao ataque
-     */
     private reagirAoAtaque(jogador: Sobrevivente): string {
-        // Se tem munição, pode eliminar o zumbi
         if (jogador.usarMunicao(CUSTO_MUNICAO)) {
             this.foiColetado = true;
             jogador.estatisticas.incrementarZumbisEliminados();
 
-            // Recompensa aleatória (pode ser nada)
             const recompensa = this.sortearRecompensa();
             if (recompensa) {
                 jogador.adicionarRecurso(recompensa.tipo, recompensa.valor);
@@ -79,41 +60,31 @@ export class Zumbi extends EntidadeDoMapa {
                 return `🔫 Você eliminou o zumbi! Mas não encontrou nada...`;
             }
         } else {
-            // SEM MUNIÇÃO - teste 50/50 para fugir
-            const conseguiuFugir = Math.floor(Math.random() * 2) === 1; // 0 ou 1
+            const conseguiuFugir = Math.floor(Math.random() * 2) === 1;
             
             if (conseguiuFugir) {
-                // Resultado 1: Consegue fugir, zumbi permanece no mapa
-                this.foiColetado = false; // Zumbi NÃO é removido
-                return `🏃✅ Você conseguiu fugir do zumbi! (Zumbi permanece no mapa)`;
+                this.foiColetado = false;
+                return `🏃✅ Você conseguiu fugir do zumbi!`;
             } else {
-                // Resultado 0: Fuga falhou - SOBREVIVENTE É ELIMINADO IMEDIATAMENTE
                 jogador.vida = 0;
                 jogador.estaVivo = false;
-                this.foiColetado = false; // Zumbi NÃO é removido
+                this.foiColetado = false;
                 return `🏃❌ Falha na fuga! 💀 O zumbi te alcançou e você morreu!`;
             }
         }
     }
 
-    /**
-     * Sorteia recompensa aleatória (pode retornar null para nada)
-     */
     private sortearRecompensa(): { tipo: any; valor: number; mensagem: string } | null {
-        const chanceNada = 0.3; // 30% de chance de não dar nada
+        const chanceNada = 0.3;
+        if (Math.random() < chanceNada) return null;
 
-        if (Math.random() < chanceNada) {
-            return null; // Não dá nada
-        } else {
-            // Sorteia um recurso (sempre 1 de quantidade)
-            const recursos = ['VIDA', 'ESCUDO', 'MUNICAO'];
-            const tipo = recursos[Math.floor(Math.random() * recursos.length)];
-            
-            return {
-                tipo: tipo,
-                valor: 1, // SEMPRE 1
-                mensagem: `Encontrou 1 de ${tipo}!`
-            };
-        }
+        const recursos = ['VIDA', 'ESCUDO', 'MUNICAO'];
+        const tipo = recursos[Math.floor(Math.random() * recursos.length)];
+        
+        return { tipo, valor: 1, mensagem: `Encontrou 1 de ${tipo}!` };
+    }
+
+    public override deveRemover(): boolean {
+        return this.foiColetado; // Remove apenas se eliminado
     }
 }

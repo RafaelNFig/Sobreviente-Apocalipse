@@ -1,6 +1,5 @@
 // src/core/JogoMapa.ts
 
-// Adicione .js em todos os imports
 import { CelulaDoMapa, ConfiguracaoJogo, CONFIG_PADRAO, Visibilidade } from '../tipos.js';
 import { Sobrevivente } from '../entidades/Sobrevivente.js';
 import { Zumbi } from '../entidades/Zumbi.js';
@@ -25,13 +24,12 @@ export class JogoMapa {
         this.colocarEntidades();
     }
 
-    // Inicializa a matriz e visibilidade - VERSÃO MAIS SEGURA
+    // Inicializa a matriz e visibilidade
     private inicializarMatriz(): void {
         this.matriz = [];
         this.visibilidade = [];
 
         for (let y = 0; y < this.config.tamanhoMapa; y++) {
-            // Cria novas linhas garantidas
             const novaLinhaMatriz: CelulaDoMapa[] = [];
             const novaLinhaVisibilidade: Visibilidade[] = [];
             
@@ -45,14 +43,13 @@ export class JogoMapa {
         }
     }
 
-    // Cria e posiciona entidades - VERSÃO MAIS SEGURA
+    // Cria e posiciona entidades
     private colocarEntidades(): void {
         // 1. Sobrevivente
         const sx = Math.floor(this.config.tamanhoMapa / 2);
         const sy = Math.floor(this.config.tamanhoMapa / 2);
         this.sobrevivente = new Sobrevivente(sx, sy, this.estatisticas);
         
-        // VERIFICAÇÃO MAIS SEGURA
         const linhaSobrevivente = this.matriz[sy];
         if (linhaSobrevivente && linhaSobrevivente[sx] === null) {
             linhaSobrevivente[sx] = this.sobrevivente;
@@ -64,7 +61,6 @@ export class JogoMapa {
             const x = Math.floor(Math.random() * this.config.tamanhoMapa);
             const y = Math.floor(Math.random() * this.config.tamanhoMapa);
             
-            // VERIFICAÇÃO MAIS SEGURA
             const linha = this.matriz[y];
             if (linha && linha[x] === null) {
                 linha[x] = new Zumbi(x, y);
@@ -78,7 +74,6 @@ export class JogoMapa {
             const x = Math.floor(Math.random() * this.config.tamanhoMapa);
             const y = Math.floor(Math.random() * this.config.tamanhoMapa);
             
-            // VERIFICAÇÃO MAIS SEGURA
             const linha = this.matriz[y];
             if (linha && linha[x] === null) {
                 linha[x] = new CaixaDeSuprimentos(x, y);
@@ -92,7 +87,6 @@ export class JogoMapa {
             const x = Math.floor(Math.random() * this.config.tamanhoMapa);
             const y = Math.floor(Math.random() * this.config.tamanhoMapa);
             
-            // VERIFICAÇÃO MAIS SEGURA
             const linha = this.matriz[y];
             if (linha && linha[x] === null) {
                 linha[x] = new CarroDeSaida(x, y);
@@ -104,7 +98,7 @@ export class JogoMapa {
         this.atualizarVisibilidade();
     }
 
-    // Move o sobrevivente e dispara interação - VERSÃO MAIS SEGURA
+    // Move o sobrevivente e dispara interação
     public moverSobrevivente(dx: number, dy: number): string {
         if (!this.sobrevivente) return "Erro: sobrevivente não encontrado.";
         if (!this.sobrevivente.estaVivo) return "O sobrevivente está morto.";
@@ -118,7 +112,6 @@ export class JogoMapa {
             return "Movimento inválido.";
         }
 
-        // VERIFICAÇÕES MAIS SEGURAS
         const linhaAtual = this.matriz[posAtual.y];
         const linhaNova = this.matriz[novaY];
         
@@ -131,12 +124,13 @@ export class JogoMapa {
 
         if (destino) {
             logInteracao = destino.interagir(this.sobrevivente);
+
             if (destino.deveRemover()) {
                 linhaNova[novaX] = null;
             }
         }
 
-        // Atualiza posição - COM VERIFICAÇÕES MAIS SEGURAS
+        // Atualiza posição
         linhaAtual[posAtual.x] = null;
         this.sobrevivente.mover({ x: novaX, y: novaY });
         linhaNova[novaX] = this.sobrevivente;
@@ -147,7 +141,7 @@ export class JogoMapa {
         return logInteracao || 'Movimento realizado.';
     }
 
-    // Atualiza a visibilidade ao redor do sobrevivente - VERSÃO MAIS SEGURA
+    // Atualiza a visibilidade ao redor do sobrevivente
     private atualizarVisibilidade(): void {
         const raio = this.config.raioVisao;
         
