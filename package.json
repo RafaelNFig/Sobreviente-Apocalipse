@@ -1,0 +1,27 @@
+{
+  "name": "sobrevivente-game",
+  "version": "1.0.0",
+  "description": "Projeto Sobrevivente (Campo Minado Adaptado) para a disciplina de Algoritmos e Estruturas de Dados.",
+  "main": "./dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    
+    "start": "live-server --port=3000 --open=index.html",
+
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "typescript",
+    "game",
+    "algoritmos",
+    "arrays-classicos"
+  ],
+  "author": "Camila e Rafael",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.8.1",
+    "typescript": "^5.9.3",
+    "live-server": "^2.3.0" 
+  }
+}

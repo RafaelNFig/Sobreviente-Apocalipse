@@ -1,0 +1,84 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    /* -------------------------- File Layout -------------------------- */
+
+    // Diretório onde o código-fonte (os arquivos .ts) está localizado.
+    "rootDir": "./src",
+
+    // Diretório onde os arquivos JavaScript compilados (.js) serão colocados.
+    "outDir": "./dist",
+
+    /* ------------------------- Environment Settings ------------------------- */
+
+    // Define o código JavaScript alvo para ser moderno, mas amplamente suportado
+    // (compatível com a maioria dos navegadores recentes).
+    "target": "es2020",
+
+    // Define o sistema de módulos. 'ESNext' é moderno e ideal para a Web.
+    "module": "esnext",
+
+    // Permite que você use a sintaxe de import/export do ES6 (TypeScript) para
+    // arquivos que usam 'require' (Node.js/CommonJS). Necessário para compatibilidade.
+    "esModuleInterop": true,
+
+    // Define quais bibliotecas globais estão disponíveis. Para um jogo Web simples.
+    "lib": ["dom", "es2020"],
+
+    // Não precisamos de tipos do Node.js já que o jogo roda no navegador.
+    "types": [],
+
+    /* ------------------------- Other Outputs ------------------------- */
+
+    // Cria arquivos .map para facilitar o debug do código TypeScript no navegador.
+    "sourceMap": true,
+
+    // Desativado: 'declaration' e 'declarationMap' não são necessários
+    // para um projeto de jogo de uso único.
+    // "declaration": true,
+    // "declarationMap": true,
+
+    /* ------------------------- Recommended & Stricter Typechecking Options ------------------------- */
+
+    // Ativa todas as regras rigorosas de checagem de tipos (ALTAMENTE RECOMENDADO)
+    "strict": true,
+
+    // Impede o acesso a índices que não foram checados (útil para arrays clássicos).
+    "noUncheckedIndexedAccess": true,
+
+    // Garante que todas as propriedades opcionais sejam definidas como 'undefined' se ausentes.
+    "exactOptionalPropertyTypes": true,
+
+    /* --------------------------- Style Options --------------------------- */
+
+    // Garante que todas as funções com retorno não-void realmente retornem algo.
+    "noImplicitReturns": true,
+
+    // Força o uso de 'override' ao sobrescrever métodos da classe pai (ótimo para OO).
+    "noImplicitOverride": true,
+
+    // Alerta sobre variáveis locais declaradas mas não usadas.
+    "noUnusedLocals": true,
+
+    // Alerta sobre parâmetros de função declarados mas não usados.
+    "noUnusedParameters": true,
+
+    // Impede o 'fallthrough' em blocos `switch/case`.
+    "noFallthroughCasesInSwitch": true,
+
+    /* ------------------------- Isolated & Module Settings ------------------------- */
+
+    // Desativado: JSX, Verbatim, Isolated e Module Detection não são relevantes
+    // ou necessários para um projeto TS puro injetado no HTML.
+    // "jsx": "react-jsx",
+    // "verbatimModuleSyntax": true,
+    // "isolatedModules": true,
+    // "noUncheckedSideEffectImports": true,
+    // "moduleDetection": "force",
+
+    // Não checa a tipagem dos arquivos de bibliotecas de terceiros (agiliza a compilação).
+    "skipLibCheck": true
+  },
+  // Inclui todos os arquivos TypeScript dentro do diretório 'src'
+  "include": ["src/**/*"]
+}
