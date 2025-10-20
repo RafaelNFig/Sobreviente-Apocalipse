@@ -12,6 +12,7 @@ export class JogoMapa {
         this.matriz = [];
         this.visibilidade = [];
         this.estatisticas = new JogoEstatisticas();
+        this.estatisticas.iniciarContagemTempo();
         this.inicializarMatriz();
         this.colocarEntidades();
     }

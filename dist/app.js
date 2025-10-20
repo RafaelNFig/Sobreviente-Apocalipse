@@ -1,14 +1,10 @@
 // src/app.ts
 import { JogoMapa } from './core/JogoMapa.js';
-import { JogoEstatisticas } from './core/JogoEstatisticas.js';
 import { Visibilidade, CONFIG_PADRAO } from './tipos.js';
 // ---------------------------
 // Inicialização do Jogo
 // ---------------------------
-const estatisticas = new JogoEstatisticas();
-estatisticas.iniciarContagemTempo();
-// Cria o mapa do jogo (gera sobrevivente internamente)
-const jogoMapa = new JogoMapa(CONFIG_PADRAO);
+let jogoMapa = new JogoMapa(CONFIG_PADRAO); // Mudei para let para poder reatribuir
 // Elementos HTML
 const mapaDiv = document.getElementById('mapa');
 const hudDiv = document.getElementById('hud');
@@ -16,6 +12,64 @@ const logDiv = document.getElementById('log');
 // Configurações da câmera
 const AREA_VISIVEL_TAMANHO = 5;
 const TAMANHO_CELULA = 60;
+// ---------------------------
+// Funções de Reinício
+// ---------------------------
+function mostrarTelaFimDeJogo(mensagem, vitoria) {
+    const container = document.getElementById('game-over-container');
+    const title = document.getElementById('game-over-title');
+    const stats = document.getElementById('game-over-stats');
+    const restartBtn = document.getElementById('restart-button');
+    if (!container || !title || !stats || !restartBtn)
+        return;
+    // Configura título e mensagem
+    title.textContent = vitoria ? '🎉 Você Venceu!' : '💀 Game Over!';
+    const est = jogoMapa.sobrevivente.estatisticas.getEstatisticas();
+    stats.innerHTML = `
+        <p><strong>${mensagem}</strong></p>
+        <div class="final-stats">
+            <p>🧟 Zumbis eliminados: ${est.zumbisEliminados}</p>
+            <p>🎒 Recursos coletados: ${est.recursosColetados}</p>
+            <p>🟩 Tijolos percorridos: ${est.tijolosPercorridos}</p>
+            <p>⏱️ Tempo total: ${est.tempoTotalSegundos}s</p>
+        </div>
+    `;
+    // Configura botão de reinício
+    restartBtn.onclick = reiniciarJogo;
+    // Mostra a tela
+    container.style.display = 'flex';
+}
+function reiniciarJogo() {
+    const container = document.getElementById('game-over-container');
+    if (container) {
+        container.style.display = 'none';
+    }
+    // Remove event listener antigo
+    document.removeEventListener('keydown', keyHandler);
+    // Recria o jogo completamente
+    jogoMapa = new JogoMapa(CONFIG_PADRAO);
+    // Reconfigura eventos
+    document.addEventListener('keydown', keyHandler);
+    // Atualiza a interface
+    renderizarHUD();
+    renderizarMapa();
+    // Limpa o log
+    if (logDiv) {
+        logDiv.innerHTML = '';
+    }
+    adicionarLog('🔄 Jogo reiniciado! Boa sorte, sobrevivente!');
+    adicionarLog('🎯 Encontre o carro 🚗 para escapar!');
+}
+function finalizarJogo(mensagem, vitoria = false) {
+    // Para de escutar teclas
+    document.removeEventListener('keydown', keyHandler);
+    // Finaliza estatísticas
+    jogoMapa.sobrevivente.estatisticas.finalizarJogo(vitoria);
+    // Mostra tela de fim de jogo
+    setTimeout(() => {
+        mostrarTelaFimDeJogo(mensagem, vitoria);
+    }, 500);
+}
 // ---------------------------
 // Funções de Renderização
 // ---------------------------
@@ -88,7 +142,7 @@ function renderizarMapa() {
                 celula.classList.add('visto');
             if (vis === Visibilidade.VISIVEL)
                 celula.classList.add('visivel');
-            // LÓGICA CORRIGIDA: SÓ MOSTRA ÍCONES EM ÁREAS VISÍVEIS
+            // LÓGICA: SÓ MOSTRA ÍCONES EM ÁREAS VISÍVEIS
             if (vis === Visibilidade.VISIVEL && entidade) {
                 // ÁREA VISÍVEL COM ENTIDADE: mostra ícone
                 celula.textContent = entidade.icone ?? '';
@@ -102,7 +156,6 @@ function renderizarMapa() {
             }
             // ÁREAS OCULTAS E ÁREAS VISTAS SEM ENTIDADE: célula vazia normal
             // ÁREAS VISÍVEIS SEM ENTIDADE: célula vazia normal
-            // NÃO COLOCA "?" EM LUGAR NENHUM
             // Destacar célula central (sobrevivente)
             if (x === pos.x && y === pos.y) {
                 celula.classList.add('centro-camera');
@@ -157,19 +210,10 @@ function mover(direcao) {
     renderizarMapa();
     // Condição de fim de jogo
     if (!sobrevivente.estaVivo || sobrevivente.estatisticas.concluidoComSucesso) {
-        const est = sobrevivente.estatisticas.getEstatisticas();
-        let mensagemFim = sobrevivente.estatisticas.concluidoComSucesso
+        const mensagemFim = sobrevivente.estatisticas.concluidoComSucesso
             ? '🎉 VOCÊ VENCEU! Escapou com sucesso!'
             : '💀 GAME OVER! Você morreu.';
-        mensagemFim += `\n\nEstatísticas finais:\n` +
-            `🧟 Zumbis eliminados: ${est.zumbisEliminados}\n` +
-            `🎒 Recursos coletados: ${est.recursosColetados}\n` +
-            `🟩 Tijolos percorridos: ${est.tijolosPercorridos}\n` +
-            `⏱️ Tempo total: ${est.tempoTotalSegundos}s`;
-        setTimeout(() => {
-            alert(mensagemFim);
-            document.removeEventListener('keydown', keyHandler);
-        }, 100);
+        finalizarJogo(mensagemFim, sobrevivente.estatisticas.concluidoComSucesso);
     }
 }
 // ---------------------------
