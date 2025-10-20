@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobrevivente - Apocalipse Zumbi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🧟 Sobrevivente: Apocalipse Zumbi</h1>
+        <p class="subtitle">Encontre o carro e escape antes que os zumbis te peguem!</p>
+    </header>
+
+    <div id="game-container">
+        <div id="hud-container">
+            <div id="hud">
+                <h2>📊 Status do Sobrevivente</h2>
+                <div id="hud-stats">
+                    <!-- Será preenchido pelo JavaScript -->
+                </div>
+            </div>
+            
+            <div id="controls">
+                <h2>🎮 Controles</h2>
+                <div class="controls-grid">
+                    <div class="control-key">W</div>
+                    <div class="control-key">A</div>
+                    <div class="control-key">S</div>
+                    <div class="control-key">D</div>
+                    <div class="control-label">Cima</div>
+                    <div class="control-label">Esquerda</div>
+                    <div class="control-label">Baixo</div>
+                    <div class="control-label">Direita</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <div id="mapa-container">
+                <h2>🗺️ Mapa</h2>
+                <div id="mapa">
+                    <!-- Será preenchido pelo JavaScript -->
+                </div>
+            </div>
+            
+            <div id="log-container">
+                <h2>📝 Log de Eventos</h2>
+                <div id="log">
+                    <!-- Será preenchido pelo JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="legenda">
+        <h3>📖 Legenda</h3>
+        <div class="legenda-items">
+            <div class="legenda-item">
+                <span class="icone">🧍</span>
+                <span class="texto">Você (Sobrevivente)</span>
+            </div>
+            <div class="legenda-item">
+                <span class="icone">🧟</span>
+                <span class="texto">Zumbi (Use munição para eliminar)</span>
+            </div>
+            <div class="legenda-item">
+                <span class="icone">📦</span>
+                <span class="texto">Caixa de Suprimentos</span>
+            </div>
+            <div class="legenda-item">
+                <span class="icone">🚗</span>
+                <span class="texto">Carro de Saída (Objetivo)</span>
+            </div>
+            <div class="legenda-item">
+                <span class="celula visivel"></span>
+                <span class="texto">Área visível</span>
+            </div>
+            <div class="legenda-item">
+                <span class="celula visto"></span>
+                <span class="texto">Área explorada</span>
+            </div>
+            <div class="legenda-item">
+                <span class="celula"></span>
+                <span class="texto">Área desconhecida</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🎯 <strong>Objetivo:</strong> Encontre o carro 🚗 para escapar! Colete recursos 📦 e elimine zumbis 🧟 no caminho.</p>
+    </footer>
+
+    <!-- Tela de Fim de Jogo (inicialmente oculta) -->
+    <div id="game-over-container" style="display: none;">
+        <div class="game-over-modal">
+            <h2 id="game-over-title">🎉 Você Venceu!</h2>
+            <div id="game-over-stats"></div>
+            <button id="restart-button" class="restart-btn">🔄 Reiniciar Jogo</button>
+        </div>
+    </div>
+
+    <script src="./dist/app.js" type="module"></script>
+</body>
+</html>

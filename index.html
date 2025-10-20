@@ -4,93 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobrevivente - Apocalipse Zumbi</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="landing-style.css">
 </head>
 <body>
-    <header>
-        <h1>🧟 Sobrevivente: Apocalipse Zumbi</h1>
-        <p class="subtitle">Encontre o carro e escape antes que os zumbis te peguem!</p>
-    </header>
+    <div class="landing-container">
+        <!-- Header Hero -->
+        <header class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">🧟 SOBREVIVENTE</h1>
+                <p class="hero-subtitle">Apocalipse Zumbi</p>
+                <p class="hero-description">
+                    Um jogo de estratégia e sobrevivência onde cada movimento pode ser 
+                    sua última chance de escapar!
+                </p>
+                <a href="jogo.html" class="cta-button">
+                    🎮 INICIAR SOBREVIVÊNCIA
+                </a>
+            </div>
+        </header>
 
-    <div id="game-container">
-        <div id="hud-container">
-            <div id="hud">
-                <h2>📊 Status do Sobrevivente</h2>
-                <div id="hud-stats">
-                    <!-- Será preenchido pelo JavaScript -->
+        <!-- Features Section -->
+        <section class="features">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Missão Clara</h3>
+                    <p>Encontre o carro de fuga antes que os zumbis te alcancem</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚔️</div>
+                    <h3>Combate Estratégico</h3>
+                    <p>Zumbis atacam primeiro! Use munição com sabedoria</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3>Recursos Limitados</h3>
+                    <p>Colete suprimentos para aumentar suas chances de sobrevivência</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌫️</div>
+                    <h3>Exploração</h3>
+                    <p>Descubra o mapa gradualmente com sistema de Fog of War</p>
                 </div>
             </div>
-            
-            <div id="controls">
-                <h2>🎮 Controles</h2>
-                <div class="controls-grid">
-                    <div class="control-key">W</div>
-                    <div class="control-key">A</div>
-                    <div class="control-key">S</div>
-                    <div class="control-key">D</div>
-                    <div class="control-label">Cima</div>
-                    <div class="control-label">Esquerda</div>
-                    <div class="control-label">Baixo</div>
-                    <div class="control-label">Direita</div>
-                </div>
-            </div>
-        </div>
+        </section>
 
-        <div id="game-area">
-            <div id="mapa-container">
-                <h2>🗺️ Mapa</h2>
-                <div id="mapa">
-                    <!-- Será preenchido pelo JavaScript -->
+        <!-- Game Info Section -->
+        <section class="game-info">
+            <div class="info-content">
+                <h2>💡 Sobre o Projeto</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h4>🎮 Gênero</h4>
+                        <p>Estratégia em tempo real com elementos de survival</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>🛠️ Tecnologia</h4>
+                        <p>Desenvolvido em TypeScript com padrões OO avançados</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>🎓 Educacional</h4>
+                        <p>Projeto acadêmico focado em algoritmos e estruturas de dados</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>🧩 Complexidade</h4>
+                        <p>Sistema de entidades polimórficas e gerenciamento de estado</p>
+                    </div>
                 </div>
             </div>
-            
-            <div id="log-container">
-                <h2>📝 Log de Eventos</h2>
-                <div id="log">
-                    <!-- Será preenchido pelo JavaScript -->
-                </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Pronto para a sobrevivência?</h2>
+                <p>Teste suas habilidades estratégicas neste mundo pós-apocalíptico</p>
+                <a href="jogo.html" class="cta-button">
+                    🎮 INICIAR SOBREVIVÊNCIA
+                </a>
+                <p class="cta-note">
+                    <small>Dica: Leia as instruções na tela do jogo antes de começar</small>
+                </p>
             </div>
-        </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <p>Desenvolvido por <strong>Camila e Rafael</strong> para a disciplina de Algoritmos e Estruturas de Dados</p>
+            <p class="footer-tech">🛠️ TypeScript • HTML5 • CSS3 • POO</p>
+        </footer>
     </div>
-
-    <div id="legenda">
-        <h3>📖 Legenda</h3>
-        <div class="legenda-items">
-            <div class="legenda-item">
-                <span class="icone">🧍</span>
-                <span class="texto">Você (Sobrevivente)</span>
-            </div>
-            <div class="legenda-item">
-                <span class="icone">🧟</span>
-                <span class="texto">Zumbi (Use munição para eliminar)</span>
-            </div>
-            <div class="legenda-item">
-                <span class="icone">📦</span>
-                <span class="texto">Caixa de Suprimentos</span>
-            </div>
-            <div class="legenda-item">
-                <span class="icone">🚗</span>
-                <span class="texto">Carro de Saída (Objetivo)</span>
-            </div>
-            <div class="legenda-item">
-                <span class="celula visivel"></span>
-                <span class="texto">Área visível</span>
-            </div>
-            <div class="legenda-item">
-                <span class="celula visto"></span>
-                <span class="texto">Área explorada</span>
-            </div>
-            <div class="legenda-item">
-                <span class="celula"></span>
-                <span class="texto">Área desconhecida</span>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        <p>🎯 <strong>Objetivo:</strong> Encontre o carro 🚗 para escapar! Colete recursos 📦 e elimine zumbis 🧟 no caminho.</p>
-    </footer>
-
-    <script src="./dist/app.js" type="module"></script>
 </body>
 </html>
