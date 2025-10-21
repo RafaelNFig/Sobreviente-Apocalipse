@@ -1,4 +1,4 @@
-// src/entidades/Zumbi.ts
+    // src/entidades/Zumbi.ts
 
 import { EntidadeDoMapa } from './EntidadeDoMapa.js';
 import { Sobrevivente } from './Sobrevivente.js';
@@ -14,7 +14,6 @@ export class Zumbi extends EntidadeDoMapa {
         if (this.foiColetado) return "Zumbi já foi eliminado.";
 
         let mensagem = "";
-
         // Zumbi ataca primeiro
         const resultadoAtaque = this.atacarSobrevivente(jogador);
         mensagem += resultadoAtaque;
@@ -23,10 +22,8 @@ export class Zumbi extends EntidadeDoMapa {
             this.foiColetado = false;
             return mensagem;
         }
-
         // Jogador reage
         mensagem += this.reagirAoAtaque(jogador);
-
         return mensagem;
     }
 
