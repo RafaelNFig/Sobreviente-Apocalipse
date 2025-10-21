@@ -107,7 +107,6 @@ function renderizarMapa(): void {
     mapaDiv.style.gridTemplateRows = `repeat(${AREA_VISIVEL_TAMANHO}, ${TAMANHO_CELULA}px)`;
     mapaDiv.innerHTML = '';
 
-    // CORREÇÃO DO BUG DAS BORDAS - SEMPRE MOSTRA 5x5 CÉLULAS
     let inicioX = pos.x - Math.floor(AREA_VISIVEL_TAMANHO / 2);
     let inicioY = pos.y - Math.floor(AREA_VISIVEL_TAMANHO / 2);
 
