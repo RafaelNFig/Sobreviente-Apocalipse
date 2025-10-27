@@ -1,6 +1,6 @@
 // src/core/JogoEstatisticas.ts
 
-import { EstatisticasJogo } from '../tipos.js';
+import { EstatisticasJogo } from '../tipos';
 
 /**
  * Classe responsável por rastrear e gerenciar todas as estatísticas do jogo.

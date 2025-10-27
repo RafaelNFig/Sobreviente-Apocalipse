@@ -1,8 +1,8 @@
 // src/entidades/Sobrevivente.ts
 
-import { Coordenada, RecursoTipo } from '../tipos.js';
-import { JogoEstatisticas } from '../core/JogoEstatisticas.js';
-import { EntidadeDoMapa } from './EntidadeDoMapa.js';
+import { Coordenada, RecursoTipo } from '../tipos';
+import { JogoEstatisticas } from '../core/JogoEstatisticas';
+import { EntidadeDoMapa } from './EntidadeDoMapa';
 
 /**
  * Representa o jogador controlado (sobrevivente) no jogo.
@@ -25,7 +25,7 @@ export class Sobrevivente extends EntidadeDoMapa {
         this.escudo = 1;
         this.municao = 3;
         this.estatisticas = estatisticas;
-        this.icone = "🧍"; // Ícone do sobrevivente
+        this.icone = ""; // Ícone do sobrevivente
     }
 
     /**
@@ -43,16 +43,16 @@ export class Sobrevivente extends EntidadeDoMapa {
         if (this.escudo > 0) {
             const danoAbsorvido = Math.min(dano, this.escudo);
             this.escudo -= danoAbsorvido;
-            return `🛡️ Escudo absorveu ${danoAbsorvido} de dano! Restante: ${this.escudo}/${this.LIMITE_ESCUDO}`;
+            return `Escudo absorveu ${danoAbsorvido} de dano! 🛡️`;
         }
 
         this.vida = Math.max(0, this.vida - dano);
         if (this.vida <= 0) {
             this.estaVivo = false;
-            return "💀 O Sobrevivente morreu!";
+            return "Você morreu! 💀";
         }
 
-        return `💢 Recebeu ${dano} de dano. Vida restante: ${this.vida}/${this.LIMITE_VIDA}`;
+        return `Recebeu ${dano} de dano! ❤️`;
     }
 
     /**
@@ -71,34 +71,34 @@ export class Sobrevivente extends EntidadeDoMapa {
      */
     public adicionarRecurso(tipo: RecursoTipo, quantidade: number): string {
         switch (tipo) {
-            case 'VIDA':
+            case RecursoTipo.VIDA:
                 const vidaAntes = this.vida;
                 this.vida = Math.min(this.LIMITE_VIDA, this.vida + quantidade);
                 const vidaGanha = this.vida - vidaAntes;
                 if (vidaGanha > 0) {
-                    return `❤️ Ganhou ${vidaGanha} de Vida. Total: ${this.vida}/${this.LIMITE_VIDA}`;
+                    return `Você ganhou ${vidaGanha} de vida! ❤️`;
                 } else {
-                    return `💔 Vida no máximo! (${this.vida}/${this.LIMITE_VIDA})`;
+                    return `Vida no máximo! ❤️`;
                 }
 
-            case 'ESCUDO':
+            case RecursoTipo.ESCUDO:
                 const escudoAntes = this.escudo;
                 this.escudo = Math.min(this.LIMITE_ESCUDO, this.escudo + quantidade);
                 const escudoGanho = this.escudo - escudoAntes;
                 if (escudoGanho > 0) {
-                    return `🛡️ Ganhou ${escudoGanho} de Escudo. Total: ${this.escudo}/${this.LIMITE_ESCUDO}`;
+                    return `Você ganhou ${escudoGanho} de escudo! 🛡️`;
                 } else {
-                    return `🔒 Escudo no máximo! (${this.escudo}/${this.LIMITE_ESCUDO})`;
+                    return `Escudo no máximo! 🛡️`;
                 }
 
-            case 'MUNICAO':
+            case RecursoTipo.MUNICAO:
                 const municaoAntes = this.municao;
                 this.municao = Math.min(this.LIMITE_MUNICAO, this.municao + quantidade);
                 const municaoGanha = this.municao - municaoAntes;
                 if (municaoGanha > 0) {
-                    return `🔫 Ganhou ${municaoGanha} de Munição. Total: ${this.municao}/${this.LIMITE_MUNICAO}`;
+                    return `Você ganhou ${municaoGanha} de munição! 🔫`;
                 } else {
-                    return `📦 Munição no máximo! (${this.municao}/${this.LIMITE_MUNICAO})`;
+                    return `Munição no máximo! 🔫`;
                 }
 
             default:

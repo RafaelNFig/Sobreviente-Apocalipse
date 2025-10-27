@@ -1,7 +1,7 @@
 // src/entidades/CarroDeSaida.ts
 
-import { EntidadeDoMapa } from './EntidadeDoMapa.js';
-import { Sobrevivente } from './Sobrevivente.js';
+import { EntidadeDoMapa } from './EntidadeDoMapa';
+import { Sobrevivente } from './Sobrevivente';
 
 /**
  * Entidade que representa o ponto de saída/vitória do jogo.
@@ -10,7 +10,7 @@ export class CarroDeSaida extends EntidadeDoMapa {
 
     constructor(x: number, y: number) {
         super(x, y);
-        this.icone = '🚗';
+        this.icone = '';
     }
 
     /**
@@ -31,6 +31,6 @@ export class CarroDeSaida extends EntidadeDoMapa {
         // Sinaliza o término do jogo (pode ser tratado externamente)
         sobrevivente.estaVivo = false;
 
-        return "🚗 Você encontrou o carro e escapou com sucesso! Parabéns, sobrevivente!";
+        return "Você encontrou o carro e escapou! 🎉";
     }
 }

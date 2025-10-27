@@ -1,6 +1,6 @@
 // src/tipos.ts
 
-import { EntidadeDoMapa } from './entidades/EntidadeDoMapa.js';
+import { EntidadeDoMapa } from './entidades/EntidadeDoMapa';
 
 // ===============================
 // 🧩 Tipos Base
@@ -13,6 +13,62 @@ export type Coordenada = {
 
 // Cada célula do mapa pode conter uma entidade ou ser vazia
 export type CelulaDoMapa = EntidadeDoMapa | null;
+
+// ===============================
+// 🎮 Sistema de Dificuldade e Tamanho
+// ===============================
+
+export enum Dificuldade {
+  FACIL = 'facil',
+  MEDIO = 'medio', 
+  DIFICIL = 'dificil'
+}
+
+export enum TamanhoMapa {
+  PEQUENO = 'pequeno',
+  NORMAL = 'normal',
+  GRANDE = 'grande'
+}
+
+export interface ConfiguracaoDificuldade {
+  numZumbis: number;
+  numCaixas: number;
+  raioVisao: number;
+}
+
+export interface ConfiguracaoTamanho {
+  tamanhoMapa: number;
+}
+
+export const CONFIG_DIFICULDADES: Record<Dificuldade, ConfiguracaoDificuldade> = {
+  [Dificuldade.FACIL]: {
+    numZumbis: 8,
+    numCaixas: 15,
+    raioVisao: 3
+  },
+  [Dificuldade.MEDIO]: {
+    numZumbis: 15,
+    numCaixas: 12,
+    raioVisao: 2
+  },
+  [Dificuldade.DIFICIL]: {
+    numZumbis: 25,
+    numCaixas: 8,
+    raioVisao: 1
+  }
+};
+
+export const CONFIG_TAMANHOS: Record<TamanhoMapa, ConfiguracaoTamanho> = {
+  [TamanhoMapa.PEQUENO]: {
+    tamanhoMapa: 15
+  },
+  [TamanhoMapa.NORMAL]: {
+    tamanhoMapa: 25
+  },
+  [TamanhoMapa.GRANDE]: {
+    tamanhoMapa: 35
+  }
+};
 
 // ===============================
 // 🎒 Recursos
@@ -42,12 +98,12 @@ export interface ConfiguracaoJogo {
   raioVisao: number;
 }
 
-// Configurações padrão
+// Configurações padrão (usando médio/normal como padrão)
 export const CONFIG_PADRAO: ConfiguracaoJogo = {
   tamanhoMapa: 25,
-  numZumbis: 25,
-  numCaixas: 20,
-  raioVisao: 1, // O Sobrevivente pode ver até 2 células de distância
+  numZumbis: 15,
+  numCaixas: 12,
+  raioVisao: 3,
 };
 
 // ===============================

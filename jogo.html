@@ -4,9 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobrevivente - Apocalipse Zumbi</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <!-- Modal de Seleção de Dificuldade e Tamanho -->
+    <div id="dificuldade-modal" class="modal-overlay" style="display: flex;">
+        <div class="modal-content">
+            <h2>🎮 Preparar Sobrevivência</h2>
+            
+            <!-- Seleção de Dificuldade -->
+            <div class="config-section">
+                <h3>💀 Intensidade da Ameaça</h3>
+                <div class="options-grid">
+                    <div class="option-card" data-dificuldade="facil">
+                        <h4>Iniciante</h4>
+                        <p>🌱 Poucos zumbis à espreita</p>
+                        <p>📦 Abundância de recursos</p>
+                        <p>👁️ Visão ampla do território</p>
+                        <p><em>Ideal para primeiras explorações</em></p>
+                    </div>
+                    <div class="option-card" data-dificuldade="medio">
+                        <h4>Sobrevivente</h4>
+                        <p>⚔️ Ameaça equilibrada</p>
+                        <p>🎒 Recursos moderados</p>
+                        <p>🔍 Visão padrão</p>
+                        <p><em>Desafio para veteranos</em></p>
+                    </div>
+                    <div class="option-card" data-dificuldade="dificil">
+                        <h4>Apocalipse</h4>
+                        <p>🧟 Hordas implacáveis</p>
+                        <p>💀 Recursos escassos</p>
+                        <p>🌫️ Visão limitada</p>
+                        <p><em>Apenas para os mais corajosos</em></p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Seleção de Tamanho do Mapa -->
+            <div class="config-section">
+                <h3>🗺️ Escala do Território</h3>
+                <div class="options-grid">
+                    <div class="option-card" data-tamanho="pequeno">
+                        <h4>Zona Local</h4>
+                        <p>🏘️ Área compacta</p>
+                        <p>⚡ Exploração rápida</p>
+                        <p>🎯 Objetivo próximo</p>
+                        <p><em>Para uma fuga ágil</em></p>
+                    </div>
+                    <div class="option-card" data-tamanho="normal">
+                        <h4>Cidade Média</h4>
+                        <p>🏙️ Proporção equilibrada</p>
+                        <p>🧭 Exploração moderada</p>
+                        <p>📍 Distâncias razoáveis</p>
+                        <p><em>Experiência clássica</em></p>
+                    </div>
+                    <div class="option-card" data-tamanho="grande">
+                        <h4>Metrópole</h4>
+                        <p>🏢 Vastos territórios</p>
+                        <p>🗿 Exploração extensa</p>
+                        <p>🧳 Jornada épica</p>
+                        <p><em>Para os que buscam aventura completa</em></p>
+                    </div>
+                </div>
+            </div>
+    
+            <button id="iniciar-jogo-btn" class="iniciar-btn" disabled>
+                🎯 Iniciar Sobrevivência
+            </button>
+        </div>
+    </div>
+
     <header>
         <h1>🧟 Sobrevivente: Apocalipse Zumbi</h1>
         <p class="subtitle">Encontre o carro e escape antes que os zumbis te peguem!</p>
@@ -43,16 +111,10 @@
                     <!-- Será preenchido pelo JavaScript -->
                 </div>
             </div>
-            
-            <div id="log-container">
-                <h2>📝 Log de Eventos</h2>
-                <div id="log">
-                    <!-- Será preenchido pelo JavaScript -->
-                </div>
-            </div>
+            <!-- LOG CONTAINER REMOVIDO -->
         </div>
     </div>
-
+   
     <div id="legenda">
         <h3>📖 Legenda</h3>
         <div class="legenda-items">
@@ -100,6 +162,6 @@
         </div>
     </div>
 
-    <script src="./dist/app.js" type="module"></script>
+    <script src="/src/app.ts" type="module"></script>
 </body>
 </html>

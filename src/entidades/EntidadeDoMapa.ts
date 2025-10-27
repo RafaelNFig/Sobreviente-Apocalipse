@@ -1,7 +1,7 @@
 // src/entidades/EntidadeDoMapa.ts
 
-import { Coordenada, RecursoTipo, RecursoDetalhado } from '../tipos.js';
-import type { Sobrevivente } from './Sobrevivente.js';
+import { Coordenada, RecursoTipo, RecursoDetalhado } from '../tipos';
+import type { Sobrevivente } from './Sobrevivente';
 
 /**
  * Classe base abstrata para todas as entidades do mapa

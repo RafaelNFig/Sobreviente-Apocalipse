@@ -1,11 +1,11 @@
 // src/core/JogoMapa.ts
 
-import { CelulaDoMapa, ConfiguracaoJogo, CONFIG_PADRAO, Visibilidade } from '../tipos.js';
-import { Sobrevivente } from '../entidades/Sobrevivente.js';
-import { Zumbi } from '../entidades/Zumbi.js';
-import { CaixaDeSuprimentos } from '../entidades/CaixaDeSuprimentos.js';
-import { CarroDeSaida } from '../entidades/CarroDeSaida.js';
-import { JogoEstatisticas } from './JogoEstatisticas.js';
+import { CelulaDoMapa, ConfiguracaoJogo, CONFIG_PADRAO, Visibilidade } from '../tipos';
+import { Sobrevivente } from '../entidades/Sobrevivente';
+import { Zumbi } from '../entidades/Zumbi';
+import { CaixaDeSuprimentos } from '../entidades/CaixaDeSuprimentos';
+import { CarroDeSaida } from '../entidades/CarroDeSaida';
+import { JogoEstatisticas } from './JogoEstatisticas';
 
 export class JogoMapa {
     public matriz: CelulaDoMapa[][];
@@ -98,46 +98,51 @@ export class JogoMapa {
         this.atualizarVisibilidade();
     }
 
-    // Move o sobrevivente e dispara interação
     public moverSobrevivente(dx: number, dy: number): string {
         if (!this.sobrevivente) return "Erro: sobrevivente não encontrado.";
         if (!this.sobrevivente.estaVivo) return "O sobrevivente está morto.";
-
+    
         const posAtual = this.sobrevivente.posicao;
         const novaX = posAtual.x + dx;
         const novaY = posAtual.y + dy;
-
+    
         if (novaX < 0 || novaX >= this.config.tamanhoMapa ||
             novaY < 0 || novaY >= this.config.tamanhoMapa) {
             return "Movimento inválido.";
         }
-
+    
         const linhaAtual = this.matriz[posAtual.y];
         const linhaNova = this.matriz[novaY];
         
         if (!linhaAtual || !linhaNova) {
             return "Erro no mapa.";
         }
-
+    
         const destino = linhaNova[novaX];
         let logInteracao = '';
-
+    
         if (destino) {
             logInteracao = destino.interagir(this.sobrevivente);
-
+    
+            // CORREÇÃO: Só remove se deveRemover() retornar TRUE
             if (destino.deveRemover()) {
                 linhaNova[novaX] = null;
+            } else {
+                // Se a entidade NÃO deve ser removida (zumbi morto),
+                // o sobrevivente NÃO pode se mover para essa posição
+                this.atualizarVisibilidade();
+                return logInteracao;
             }
         }
-
-        // Atualiza posição
+    
+        // Move o sobrevivente (só chega aqui se célula estiver vazia ou entidade foi removida)
         linhaAtual[posAtual.x] = null;
         this.sobrevivente.mover({ x: novaX, y: novaY });
         linhaNova[novaX] = this.sobrevivente;
-
+    
         // Atualiza visibilidade
         this.atualizarVisibilidade();
-
+    
         return logInteracao || 'Movimento realizado.';
     }
 

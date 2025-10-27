@@ -2,14 +2,11 @@
   "name": "sobrevivente-game",
   "version": "1.0.0",
   "description": "Projeto Sobrevivente (Campo Minado Adaptado) para a disciplina de Algoritmos e Estruturas de Dados.",
-  "main": "./dist/app.js",
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    
-    "start": "live-server --port=3000 --open=index.html",
-
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite --port 3000 --open",
+    "build": "vite build",
+    "preview": "vite preview --port 3000"
   },
   "keywords": [
     "typescript",
@@ -22,6 +19,6 @@
   "devDependencies": {
     "@types/node": "^24.8.1",
     "typescript": "^5.9.3",
-    "live-server": "^2.3.0" 
+    "vite": "^6.0.1"
   }
 }

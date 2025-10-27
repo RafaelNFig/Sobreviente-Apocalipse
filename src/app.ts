@@ -1,21 +1,55 @@
 // src/app.ts
-import { JogoMapa } from './core/JogoMapa.js';
-import { Visibilidade, CONFIG_PADRAO } from './tipos.js';
-import { Zumbi } from './entidades/Zumbi.js';
+import { JogoMapa } from './core/JogoMapa';
+import { Visibilidade, CONFIG_PADRAO, ConfiguracaoJogo } from './tipos';
+import { Zumbi } from './entidades/Zumbi';
+import { CaixaDeSuprimentos } from './entidades/CaixaDeSuprimentos';
+import { CarroDeSaida } from './entidades/CarroDeSaida';
+import { ModalConfiguracao } from './modal-config';
 
 // ---------------------------
-// Inicialização do Jogo
+// Variáveis Globais
 // ---------------------------
-let jogoMapa = new JogoMapa(CONFIG_PADRAO);
+let jogoMapa: JogoMapa;
+let configJogoAtual: ConfiguracaoJogo = CONFIG_PADRAO;
+let jogoIniciado = false;
+let modal: ModalConfiguracao;
 
 // Elementos HTML
 const mapaDiv = document.getElementById('mapa') as HTMLDivElement | null;
 const hudDiv = document.getElementById('hud') as HTMLDivElement | null;
-const logDiv = document.getElementById('log') as HTMLDivElement | null;
+const mapaContainer = document.getElementById('mapa-container') as HTMLDivElement | null;
 
 // Configurações da câmera
-const AREA_VISIVEL_TAMANHO = 5;
-const TAMANHO_CELULA = 60;
+const AREA_VISIVEL_COLUNAS = 15;
+const AREA_VISIVEL_LINHAS = 7;
+const TAMANHO_CELULA = 70;
+
+// ---------------------------
+// Sistema de Notificações
+// ---------------------------
+function mostrarNotificacao(mensagem: string, tipo: string = 'info'): void {
+    if (!mapaContainer) return;
+
+    // Remove notificações anteriores
+    const notificacoesAntigas = mapaContainer.querySelectorAll('.notificacao');
+    notificacoesAntigas.forEach(notif => notif.remove());
+
+    const notificacao = document.createElement('div');
+    notificacao.className = `notificacao ${tipo}`;
+    notificacao.textContent = mensagem;
+    
+    mapaContainer.appendChild(notificacao);
+
+    // Animação de fade out após 2 segundos
+    setTimeout(() => {
+        notificacao.classList.add('fade-out');
+        setTimeout(() => {
+            if (notificacao.parentNode) {
+                notificacao.parentNode.removeChild(notificacao);
+            }
+        }, 500);
+    }, 2000);
+}
 
 // ---------------------------
 // Funções de Reinício
@@ -52,18 +86,16 @@ function reiniciarJogo(): void {
     }
 
     document.removeEventListener('keydown', keyHandler);
-    jogoMapa = new JogoMapa(CONFIG_PADRAO);
-    document.addEventListener('keydown', keyHandler);
-    renderizarHUD();
-    renderizarMapa();
     
-    if (logDiv) {
-        logDiv.innerHTML = '';
-    }
+    // Reseta o estado do jogo
+    jogoIniciado = false;
     
-    adicionarLog('🔄 Jogo reiniciado! Boa sorte, sobrevivente!');
-    adicionarLog('🎯 Encontre o carro 🚗 para escapar!');
-    adicionarLog('👻 Cuidado com zumbis INVISÍVEIS!');
+    // Mostra o modal novamente
+    modal.mostrar();
+    
+    // Limpa o mapa e HUD
+    if (mapaDiv) mapaDiv.innerHTML = '';
+    if (hudDiv) hudDiv.innerHTML = '<p>Selecione a dificuldade para começar...</p>';
 }
 
 function finalizarJogo(mensagem: string, vitoria: boolean = false): void {
@@ -103,25 +135,25 @@ function renderizarMapa(): void {
     const matriz = jogoMapa.obterMatriz();
     const visibilidade = jogoMapa.obterVisibilidade();
 
-    mapaDiv.style.gridTemplateColumns = `repeat(${AREA_VISIVEL_TAMANHO}, ${TAMANHO_CELULA}px)`;
-    mapaDiv.style.gridTemplateRows = `repeat(${AREA_VISIVEL_TAMANHO}, ${TAMANHO_CELULA}px)`;
+    mapaDiv.style.gridTemplateColumns = `repeat(${AREA_VISIVEL_COLUNAS}, ${TAMANHO_CELULA}px)`;
+    mapaDiv.style.gridTemplateRows = `repeat(${AREA_VISIVEL_LINHAS}, ${TAMANHO_CELULA}px)`;
     mapaDiv.innerHTML = '';
 
-    let inicioX = pos.x - Math.floor(AREA_VISIVEL_TAMANHO / 2);
-    let inicioY = pos.y - Math.floor(AREA_VISIVEL_TAMANHO / 2);
+    let inicioX = pos.x - Math.floor(AREA_VISIVEL_COLUNAS / 2);
+    let inicioY = pos.y - Math.floor(AREA_VISIVEL_LINHAS / 2);
 
     if (inicioX < 0) inicioX = 0;
     if (inicioY < 0) inicioY = 0;
 
-    let fimX = inicioX + AREA_VISIVEL_TAMANHO;
-    let fimY = inicioY + AREA_VISIVEL_TAMANHO;
+    let fimX = inicioX + AREA_VISIVEL_COLUNAS;
+    let fimY = inicioY + AREA_VISIVEL_LINHAS;
 
     if (fimX > jogoMapa.config.tamanhoMapa) {
-        inicioX = jogoMapa.config.tamanhoMapa - AREA_VISIVEL_TAMANHO;
+        inicioX = jogoMapa.config.tamanhoMapa - AREA_VISIVEL_COLUNAS;
         fimX = jogoMapa.config.tamanhoMapa;
     }
     if (fimY > jogoMapa.config.tamanhoMapa) {
-        inicioY = jogoMapa.config.tamanhoMapa - AREA_VISIVEL_TAMANHO;
+        inicioY = jogoMapa.config.tamanhoMapa - AREA_VISIVEL_LINHAS;
         fimY = jogoMapa.config.tamanhoMapa;
     }
 
@@ -150,22 +182,26 @@ function renderizarMapa(): void {
 
             // LÓGICA: SÓ MOSTRA ÍCONES EM ÁREAS VISÍVEIS
             if (vis === Visibilidade.VISIVEL && entidade) {
-                // Zumbis são sempre invisíveis - não mostramos ícone
-                if (!(entidade instanceof Zumbi)) {
-                    celula.textContent = entidade.icone ?? '';
-                    celula.style.fontSize = '32px';
+                // ZUMBI: mostra apenas se estiver morto
+                if (entidade instanceof Zumbi) {
+                    const zumbi = entidade as Zumbi;
                     
+                    if (zumbi.morto) {
+                        celula.classList.add('zumbi-morto');
+                    }
+                    // Zumbis vivos continuam invisíveis
+                } else {
+                    // Outras entidades (sobrevivente, caixa, carro)
                     if (entidade === sobrevivente) {
                         celula.classList.add('sobrevivente');
                         celula.classList.add('centro-camera');
-                        celula.style.fontSize = '36px';
-                        celula.style.fontWeight = 'bold';
+                    } else if (entidade instanceof CaixaDeSuprimentos) {
+                        celula.classList.add('caixa-suprimentos');
+                    } else if (entidade instanceof CarroDeSaida) {
+                        celula.classList.add('carro-saida');
                     }
                 }
-                // Zumbis: não mostra nada (sempre invisíveis)
             }
-            // ÁREAS OCULTAS E ÁREAS VISTAS SEM ENTIDADE: célula vazia normal
-            // ÁREAS VISÍVEIS SEM ENTIDADE: célula vazia normal
 
             // Destacar célula central (sobrevivente)
             if (x === pos.x && y === pos.y) {
@@ -177,24 +213,12 @@ function renderizarMapa(): void {
     }
 }
 
-function adicionarLog(mensagem: string): void {
-    if (!logDiv) return;
-    const logItem = document.createElement('div');
-    logItem.textContent = mensagem;
-    logDiv.appendChild(logItem);
-
-    // Limita o número de mensagens
-    while (logDiv.children.length > 15) {
-        logDiv.removeChild(logDiv.firstChild!);
-    }
-
-    logDiv.scrollTop = logDiv.scrollHeight;
-}
-
 // ---------------------------
 // Controle de Movimentação
 // ---------------------------
 function mover(direcao: string): void {
+    if (!jogoIniciado) return;
+
     const sobrevivente = jogoMapa.sobrevivente;
     if (!sobrevivente) return;
 
@@ -210,11 +234,37 @@ function mover(direcao: string): void {
 
     const mensagem = jogoMapa.moverSobrevivente(dx, dy);
 
-    // SÓ adiciona log se for uma interação importante
-    if (mensagem && 
-        mensagem !== 'Movimento realizado.' && 
-        mensagem !== 'Movimento inválido.') {
-        adicionarLog(mensagem);
+    // Mostra notificação para eventos importantes
+    if (mensagem && mensagem !== 'Movimento realizado.' && mensagem !== 'Movimento inválido.') {
+        let tipo = 'info';
+        let mensagemFormatada = mensagem;
+
+        // Detecta o tipo de evento e formata a mensagem
+        if (mensagem.includes('munição')) {
+            tipo = 'municao';
+            mensagemFormatada = `🎯 ${mensagem} `;
+        } else if (mensagem.includes('vida')) {
+            tipo = 'vida';
+            mensagemFormatada = `❤️ ${mensagem} `;
+        } else if (mensagem.includes('escudo')) {
+            tipo = 'escudo';
+            mensagemFormatada = `🛡️ ${mensagem} `;
+        } else if (mensagem.includes('zumbi')) {
+            tipo = 'zumbi';
+            if (mensagem.includes('eliminou')) {
+                mensagemFormatada = `🧟 ${mensagem} 💥`;
+            } else {
+                mensagemFormatada = `🧟 ${mensagem} ⚔️`;
+            }
+        } else if (mensagem.includes('carro')) {
+            tipo = 'carro';
+            mensagemFormatada = `🚗 ${mensagem} 🎉`;
+        } else if (mensagem.includes('caixa vazia')) {
+            tipo = 'info';
+            mensagemFormatada = `📦 ${mensagem} 😞`;
+        }
+
+        mostrarNotificacao(mensagemFormatada, tipo);
     }
 
     renderizarHUD();
@@ -242,28 +292,43 @@ function keyHandler(event: KeyboardEvent): void {
 }
 
 // ---------------------------
-// Inicialização
+// Inicialização do Jogo
 // ---------------------------
-function inicializarJogo(): void {
-    if (!mapaDiv || !hudDiv || !logDiv) {
-        console.error('❌ Elementos HTML não encontrados!');
-        return;
-    }
+function iniciarJogoComConfig(config: ConfiguracaoJogo): void {
+    configJogoAtual = config;
+    jogoMapa = new JogoMapa(configJogoAtual);
+    jogoIniciado = true;
 
     document.addEventListener('keydown', keyHandler);
     renderizarHUD();
     renderizarMapa();
 
-    adicionarLog('🎮 Jogo iniciado! Cuidado com zumbis INVISÍVEIS!');
-    adicionarLog('👻 Zumbis são SEMPRE invisíveis - surpresa total!');
-    adicionarLog('⚔️ Zumbis atacam primeiro! Use munição para eliminá-los');
-    adicionarLog('🏃 Sem munição? 50% de chance de fugir ou morrer!');
-    adicionarLog('📦 Caixas podem estar vazias (20% chance)');
-    adicionarLog('🎯 Objetivo: Encontre o carro 🚗 para escapar!');
+    // Notificação inicial
+    setTimeout(() => {
+        mostrarNotificacao('🎮 Use W,A,S,D para mover! Encontre o carro 🚗 para escapar!', 'info');
+    }, 500);
+}
+
+// ---------------------------
+// Inicialização da Aplicação
+// ---------------------------
+function inicializarAplicacao(): void {
+    if (!mapaDiv || !hudDiv || !mapaContainer) {
+        console.error('❌ Elementos HTML não encontrados!');
+        return;
+    }
+
+    // Inicializa o modal de configuração
+    modal = new ModalConfiguracao();
+
+    // Escuta o evento de configuração do jogo
+    document.addEventListener('jogoConfigurado', ((event: CustomEvent) => {
+        iniciarJogoComConfig(event.detail.config);
+    }) as EventListener);
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarJogo);
+    document.addEventListener('DOMContentLoaded', inicializarAplicacao);
 } else {
-    inicializarJogo();
+    inicializarAplicacao();
 }

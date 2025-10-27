@@ -1,8 +1,8 @@
 // src/entidades/CaixaDeSuprimentos.ts
 
-import { EntidadeDoMapa } from './EntidadeDoMapa.js';
-import { Sobrevivente } from './Sobrevivente.js';
-import { RecursoTipo, RecursoDetalhado } from '../tipos.js';
+import { EntidadeDoMapa } from './EntidadeDoMapa';
+import { Sobrevivente } from './Sobrevivente';
+import { RecursoTipo, RecursoDetalhado } from '../tipos';
 
 /**
  * Entidade que contém um recurso aleatório (vida, escudo ou munição).
@@ -11,7 +11,7 @@ export class CaixaDeSuprimentos extends EntidadeDoMapa {
   private recurso: RecursoDetalhado | null; // Pode ser null para caixa vazia
 
   constructor(x: number, y: number) {
-    super(x, y, '📦');
+    super(x, y, '');
     this.recurso = this.sortearRecursoCompleto(); // Novo método
   }
 
@@ -56,7 +56,21 @@ export class CaixaDeSuprimentos extends EntidadeDoMapa {
     } else {
       // Caixa com recurso - usa o método do Sobrevivente (que aplica limites)
       const resultado = sobrevivente.adicionarRecurso(this.recurso.tipo, this.recurso.valor);
-      mensagem = resultado;
+      
+      // Formata mensagem amigável para notificação
+      switch (this.recurso.tipo) {
+        case RecursoTipo.VIDA:
+          mensagem = 'Você encontrou 1 de vida! ❤️';
+          break;
+        case RecursoTipo.ESCUDO:
+          mensagem = 'Você encontrou 1 de escudo! 🛡️';
+          break;
+        case RecursoTipo.MUNICAO:
+          mensagem = 'Você encontrou 1 munição! 🔫';
+          break;
+        default:
+          mensagem = resultado; // Fallback
+      }
 
       // Só conta estatística se realmente ganhou recurso
       if (!mensagem.includes('no máximo') && !mensagem.includes('desconhecido')) {
@@ -67,7 +81,7 @@ export class CaixaDeSuprimentos extends EntidadeDoMapa {
     // Marca a caixa como coletada
     this.foiColetado = true;
 
-    return `[Caixa Coletada] ${mensagem}`;
+    return mensagem; // Retorna mensagem limpa para notificação
   }
 
   /**

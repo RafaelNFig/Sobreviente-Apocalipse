@@ -194,7 +194,7 @@ header h1 {
 ========================================= */
 #game-area {
     display: grid;
-    grid-template-columns: 1fr 350px;
+    grid-template-columns: 1fr 400px;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
     flex: 1;
@@ -210,17 +210,18 @@ header h1 {
         url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><rect fill="%235d4037" width="100" height="100"/></svg>');
     border: 3px solid #5d4037;
     border-radius: 8px;
-    padding: 0.8rem;
+    padding: 1.5rem;
     box-shadow: 
-        0 4px 15px rgba(0, 0, 0, 0.6),
-        inset 0 0 20px rgba(139, 0, 0, 0.2);
-    display: inline-flex;
+        0 8px 25px rgba(139, 0, 0, 0.5), /* Aumentei a sombra externa */
+        inset 0 0 50px rgba(0, 0, 0, 0.7); /* Aumentei a sombra interna */
+    display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    width: auto;
-    height: auto;
+    justify-content: center;
+    width: 120%;
+    height: auto;   
     position: relative;
+    min-height: 600px; /* Ajustei para o novo tamanho */
 }
 
 #mapa-container::before {
@@ -239,29 +240,29 @@ header h1 {
 
 #mapa-container h2 {
     color: #ffab91;
-    margin-bottom: 0.6rem;
-    font-size: 1.2rem;
-    border-bottom: 1px solid #5d4037;
-    padding-bottom: 0.3rem;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #5d4037;
+    padding-bottom: 0.5rem;
     font-family: 'Courier New', monospace;
 }
 
 /* =========================================
-   🧩 MAPA - CAMPO DE BATALHA
+   🧩 MAPA - CAMPO DE BATALHA (15x7 - 60px)
 ========================================= */
 #mapa {
     display: grid;
-    grid-template-columns: repeat(5, 48px);
-    grid-template-rows: repeat(5, 48px);
-    gap: 2px;
+    grid-template-columns: repeat(15, 70px); /* 15 colunas */
+    grid-template-rows: repeat(7, 70px);     /* 7 linhas */
+    gap: 3px;
     border: 3px solid #5d4037;
     background: 
         linear-gradient(45deg, rgba(20, 20, 30, 0.9) 0%, rgba(15, 15, 25, 0.9) 100%),
         repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(139, 0, 0, 0.1) 5px, rgba(139, 0, 0, 0.1) 10px);
     box-shadow: 
-        0 0 20px rgba(139, 0, 0, 0.3),
-        inset 0 0 30px rgba(0, 0, 0, 0.5);
-    border-radius: 6px;
+        0 0 40px rgba(139, 0, 0, 0.6),     /* Sombra externa MAIOR */
+        inset 0 0 60px rgba(0, 0, 0, 0.8);  /* Sombra interna MAIOR */
+    border-radius: 10px;                    /* Bordas mais arredondadas */
     width: fit-content;
     height: fit-content;
     margin: 0 auto;
@@ -271,16 +272,17 @@ header h1 {
    🔳 CÉLULAS DO MAPA - TERRENO DE BATALHA
 ========================================= */
 .celula {
-    width: 48px;
-    height: 48px;
+    width: 70px;
+    height: 70px;
     background: 
+        url('/assets/sprites/TileMapa.png'),
         linear-gradient(135deg, #1a1a1a 0%, #111 100%),
         repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(139, 0, 0, 0.1) 2px, rgba(139, 0, 0, 0.1) 4px);
+    background-size: cover, auto, auto;
     border: 1px solid #2a2a2a;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
     transition: all 0.3s ease;
     position: relative;
 }
@@ -297,37 +299,65 @@ header h1 {
 /* ÁREA OCULTA - TERRITÓRIO INEXPLORADO */
 .celula {
     background: 
+        url('/assets/sprites/TileMapa.png'),
         linear-gradient(135deg, #111 0%, #0a0a0a 100%),
         repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(139, 0, 0, 0.05) 3px, rgba(139, 0, 0, 0.05) 6px);
+    background-size: cover, auto, auto;
     border-color: #1a1a1a;
+    filter: brightness(0.3);
 }
 
 /* ÁREA JÁ EXPLORADA - TERRITÓRIO CONHECIDO */
 .celula.visto {
     background: 
+        url('/assets/sprites/TileMapa.png'),
         linear-gradient(135deg, #1a1a1a 0%, #151515 100%),
         repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(160, 82, 45, 0.1) 3px, rgba(160, 82, 45, 0.1) 6px);
+    background-size: cover, auto, auto;
     border-color: #2a2a2a;
+    filter: brightness(0.6);
 }
 
 /* ÁREA VISÍVEL - ZONA ATIVA */
 .celula.visivel {
     background: 
+        url('/assets/sprites/TileMapa.png'),
         linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%),
         repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255, 107, 107, 0.1) 3px, rgba(255, 107, 107, 0.1) 6px);
+    background-size: cover, auto, auto;
     border-color: #3a3a3a;
+    filter: brightness(1);
 }
 
-/* --- Sobrevivente - ALVO PRINCIPAL --- */
-.celula.sobrevivente {
-    background: linear-gradient(135deg, #388e3c, #2e7d32);
+/* --- SOBREVIVENTE COM GIF --- */
+.celula.visivel.sobrevivente {
+    background: 
+        url('/assets/sprites/Sobrevivente.gif') center/contain no-repeat,
+        url('/assets/sprites/TileMapa.png') center/cover !important;
     border: 3px solid #c8e6c9;
     box-shadow: 
         0 0 20px rgba(56, 142, 60, 0.7),
-        0 0 30px rgba(76, 175, 80, 0.4);
-    font-weight: bold;
-    font-size: 28px;
+        0 0 30px rgba(76, 175, 80, 0.4) !important;
     animation: survivorPulse 2s infinite;
+}
+
+/* --- CAIXA DE SUPRIMENTOS COM PNG - MESMA LÓGICA --- */
+.celula.visivel.caixa-suprimentos {
+    background: 
+        url('/assets/sprites/Box.png') center/80% no-repeat,
+        url('/assets/sprites/TileMapa.png') center/cover !important;
+}
+
+/* --- CARRO DE SAÍDA - MESMA LÓGICA --- */
+.celula.visivel.carro-saida {
+    background: 
+        url('/assets/sprites/CarroDeSaida.png') center/contain no-repeat,
+        url('/assets/sprites/TileMapa.png') center/cover !important;
+}
+
+/* --- ZUMBI (mantém invisível) --- */
+.celula.visivel.zumbi {
+    background: url('/assets/sprites/TileMapa.png') center/cover !important;
 }
 
 @keyframes survivorPulse {
@@ -342,76 +372,6 @@ header h1 {
         0 0 20px rgba(255, 215, 0, 0.5),
         0 0 40px rgba(255, 215, 0, 0.3) !important;
     z-index: 100;
-}
-
-/* =========================================
-   📜 LOG DE EVENTOS - RELATÓRIO DE COMBATE
-========================================= */
-#log-container {
-    background: 
-        linear-gradient(135deg, rgba(40, 40, 60, 0.9) 0%, rgba(30, 30, 50, 0.9) 100%),
-        repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(194, 24, 91, 0.1) 8px, rgba(194, 24, 91, 0.1) 16px);
-    border: 2px solid #c2185b;
-    border-radius: 8px;
-    padding: 1.2rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    height: 400px;
-    max-height: 400px;
-    width: 350px;
-    flex-shrink: 0;
-    position: relative;
-}
-
-#log-container::before {
-    content: "RELATÓRIO";
-    position: absolute;
-    top: -10px;
-    left: 20px;
-    background: #c2185b;
-    color: #f8bbd0;
-    padding: 2px 10px;
-    font-size: 0.8rem;
-    border-radius: 3px;
-    font-weight: bold;
-}
-
-#log-container h2 {
-    color: #f48fb1;
-    margin-bottom: 0.8rem;
-    font-size: 1.2rem;
-    border-bottom: 1px solid #c2185b;
-    padding-bottom: 0.5rem;
-    font-family: 'Courier New', monospace;
-}
-
-#log {
-    flex: 1;
-    overflow-y: auto;
-    background: rgba(10, 10, 20, 0.6);
-    border-radius: 6px;
-    padding: 0.8rem;
-    border: 1px solid #4a148c;
-    min-height: 0;
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-}
-
-#log div {
-    padding: 0.4rem;
-    margin-bottom: 0.4rem;
-    background: rgba(194, 24, 91, 0.1);
-    border-radius: 4px;
-    border-left: 3px solid #c2185b;
-    font-size: 0.85rem;
-    transition: background-color 0.2s ease;
-    word-wrap: break-word;
-    border: 1px solid rgba(194, 24, 91, 0.2);
-}
-
-#log div:hover {
-    background: rgba(194, 24, 91, 0.15);
 }
 
 /* =========================================
@@ -689,4 +649,184 @@ footer p {
 .restart-btn:hover {
     transform: scale(1.05);
     box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+}
+
+/* =========================================
+   🔔 NOTIFICAÇÕES FLUTUANTES
+========================================= */
+.notificacao {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95) 0%, rgba(40, 40, 60, 0.95) 100%);
+    border: 2px solid #5d4037;
+    border-radius: 8px;
+    padding: 12px 20px;
+    color: #ffcdd2;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.notificacao.fade-out {
+    opacity: 0;
+}
+
+.notificacao.municao {
+    border-color: #4caf50;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.notificacao.vida {
+    border-color: #f44336;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+}
+
+.notificacao.escudo {
+    border-color: #2196f3;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+}
+
+.notificacao.zumbi {
+    border-color: #8b0000;
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.6);
+}
+
+.notificacao.carro {
+    border-color: #ff9800;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.5);
+}
+
+.notificacao.info {
+    border-color: #9c27b0;
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+}
+
+/* =========================================
+   🎮 MODAL DE CONFIGURAÇÕES
+========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    border: 3px solid #5d4037;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(139, 0, 0, 0.6);
+}
+
+.modal-content h2 {
+    color: #ffab91;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.config-section {
+    margin-bottom: 2rem;
+}
+
+.config-section h3 {
+    color: #ffcdd2;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.option-card {
+    background: rgba(40, 40, 60, 0.8);
+    border: 2px solid #5d4037;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+    border-color: #ffab91;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.option-card.selected {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+}
+
+.option-card h4 {
+    color: #ffcdd2;
+    margin-bottom: 0.5rem;
+}
+
+.option-card p {
+    color: #b0b0b0;
+    margin: 0.2rem 0;
+    font-size: 0.9rem;
+}
+
+.iniciar-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #388e3c, #2e7d32);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.iniciar-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(56, 142, 60, 0.6);
+}
+
+.iniciar-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* =========================================
+   💀 ZUMBI MORTO - SPRITE
+========================================= */
+.celula.visivel.zumbi-morto {
+    background: 
+        url('public/assets/sprites/ZumbiMorto.png') center/contain no-repeat,
+        url('public/assets/sprites/TileMapa.png') center/cover;
+    background-size: 70%, cover;
+    background-repeat: no-repeat, no-repeat;
+    background-position: center, center;
+    color: transparent;
 }
